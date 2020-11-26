@@ -119,6 +119,7 @@ def run_naive_bay(dataframe, test_file_name):
     test_set = read_tsv_input_to_df(test_file_name)
     test_set['text'] = test_set['text'].str.lower()
 
+    # get vocabular in a list
     vocab = list()
     for key in _vocabulary:
         vocab.append(key)
