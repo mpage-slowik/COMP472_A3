@@ -3,6 +3,8 @@ import string
 import pandas as pd
 import re
 
+from NaiveBaysClass.NaiveBayesClassifier import NaiveBayesClassifier
+
 _vocabulary = {}
 _filtered_vocabulary = {}
 _text_vectors=[]
@@ -25,11 +27,19 @@ def build_vocabulary(training_file_name):
     # print(_filtered_vocabulary.keys())
     # df = pd.DataFrame.from_dict(_vocabulary)
     # print(df)
-
+    print(len(_filtered_vocabulary))
     #BOW reguler
     training_set['text'].apply(build_BOW,vocab=list(_vocabulary.keys()),master_vect=_text_vectors)
     df_general = pd.DataFrame(data=_text_vectors)
     df_general.columns=list(_vocabulary.keys())
+
+    df_general['q1_label'] = training_set['q1_label']
+    model = NaiveBayesClassifier(df_general, len(_filtered_vocabulary))
+    model.fit()
+    validated_array = ["self", "quarantine", "#coronavirus", ]
+    print(model.test(validated_array))
+    # print(df_general)
+
 
     # BOW filtered
     training_set['text'].apply(build_BOW,vocab=list(_filtered_vocabulary.keys()),master_vect=_filtered_text_vectors)
@@ -41,8 +51,10 @@ def build_vocabulary(training_file_name):
     # print(_vocabulary)
     # print(_filtered_vocabulary)
 
-    # print(training_set['text'])
+    # print(training_set['text'][0])
     # training_set.apply(str.lower(), columns=['text'])
+
+
 
 
 def build_BOW(text,vocab,master_vect):
