@@ -8,26 +8,25 @@ SMOOTHING_ADDITIVE = 0.01
 
 class NaiveBayesClassifier:
 
-    def __init__(self, dataframe, vocabulary_size):
-        self.dataset = dataframe
-        self.vocabulary_size = vocabulary_size
+    def __init__(self, dataframe):
+        self.total_size = len(dataframe.index)
+        self.vocabulary_size = len(dataframe.columns)
         self.log_prob_factual_claim = float()
         self.log_prob_not_factual_claim = float()
         self.log_probablility_table_factual_claim = 0
         self.log_probability_table_not_factual_claim = 0
-        self.dataset_contain_factual_claim = self.dataset[self.dataset[FACTUAL_CLAIM_ID] == FACTUAL_CLAIM_VALUE]
-        self.dataset_not_contain_factual_claim = self.dataset[self.dataset[FACTUAL_CLAIM_ID] == NOT_FACTUAL_CLAIM_VALUE]
+        self.dataset_contain_factual_claim = dataframe[dataframe[FACTUAL_CLAIM_ID] == FACTUAL_CLAIM_VALUE]
+        self.dataset_not_contain_factual_claim = dataframe[dataframe[FACTUAL_CLAIM_ID] == NOT_FACTUAL_CLAIM_VALUE]
 
     def fit(self):
         self._set_pobability_of_contain_or_not_factual_claim()
         self._set_probablility_tables_for_factual_and_not()
 
     def _set_pobability_of_contain_or_not_factual_claim(self):
-        total_size = len(self.dataset.index)
         self.log_prob_factual_claim = math.log(len(
-            self.dataset_contain_factual_claim.index)/total_size)
+            self.dataset_contain_factual_claim.index)/self.total_size)
         self.log_prob_not_factual_claim = math.log(len(
-            self.dataset_not_contain_factual_claim.index)/total_size)
+            self.dataset_not_contain_factual_claim.index)/self.total_size)
 
     def _set_probablility_tables_for_factual_and_not(self):
         self.log_probablility_table_factual_claim = self._get_probablility_table(

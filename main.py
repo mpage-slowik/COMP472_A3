@@ -34,7 +34,7 @@ def build_vocabulary(training_file_name):
     df_general.columns=list(_vocabulary.keys())
 
     df_general['q1_label'] = training_set['q1_label']
-    model = NaiveBayesClassifier(df_general, len(_filtered_vocabulary))
+    model = NaiveBayesClassifier(df_general)
     model.fit()
     validated_array = ["self", "quarantine", "#coronavirus", ]
     print(model.test(validated_array))
