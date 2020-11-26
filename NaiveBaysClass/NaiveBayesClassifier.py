@@ -19,10 +19,10 @@ class NaiveBayesClassifier:
         self.dataset_not_contain_factual_claim = dataframe[dataframe[FACTUAL_CLAIM_ID] == NOT_FACTUAL_CLAIM_VALUE]
 
     def fit(self):
-        self._set_pobability_of_contain_or_not_factual_claim()
+        self._set_pobability_of_factual_and_not()
         self._set_probablility_tables_for_factual_and_not()
 
-    def _set_pobability_of_contain_or_not_factual_claim(self):
+    def _set_pobability_of_factual_and_not(self):
         self.log_prob_factual_claim = math.log(len(
             self.dataset_contain_factual_claim.index)/self.total_size)
         self.log_prob_not_factual_claim = math.log(len(
@@ -35,8 +35,7 @@ class NaiveBayesClassifier:
             self.dataset_not_contain_factual_claim)
 
     def _get_probablility_table(self, dataset):
-        probability_table = dataset.drop(
-            columns=[FACTUAL_CLAIM_ID]).sum(axis=0)
+        probability_table = dataset.drop(columns=[FACTUAL_CLAIM_ID]).sum(axis=0)
         # NOT SURE IF WE MULTIPLY THE VOCAB SIZE BY THE SMOOTHING AND THEN ADD IT OR JUST ADD THE VOCAB SIZE
         total_number_of_words = probability_table.sum(axis=0) + (self.vocabulary_size * SMOOTHING_ADDITIVE)
         return probability_table.apply(lambda x: math.log((x + SMOOTHING_ADDITIVE) / total_number_of_words))
