@@ -41,9 +41,11 @@ class NaiveBayesClassifier:
         return probability_table.apply(lambda x: math.log((x + SMOOTHING_ADDITIVE) / total_number_of_words))
 
     def test(self, words):
-        if self._get_factual_claim_probability(words) >= self._get_not_factual_claim_probability(words):
-            return FACTUAL_CLAIM_VALUE
-        return NOT_FACTUAL_CLAIM_VALUE
+        factual_probability = self._get_factual_claim_probability(words)
+        not_factual_probability = self._get_not_factual_claim_probability(words)
+        if factual_probability >= not_factual_probability:
+            return FACTUAL_CLAIM_VALUE, factual_probability
+        return NOT_FACTUAL_CLAIM_VALUE, not_factual_probability
 
     def _get_factual_claim_probability(self, words):
         return self.log_prob_factual_claim + self._get_attribute_probability(words, self.log_probablility_table_factual_claim)

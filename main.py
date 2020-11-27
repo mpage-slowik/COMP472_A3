@@ -124,16 +124,23 @@ def run_naive_bay(dataframe, test_file_name, vocab):
     test_tweets ={}
     test_set.apply(sanitize_tweet, vocabulary=vocab,test_tweets=test_tweets, axis=1)
 
+    number_of_correct = 0
+    number_of_wrong = 0 
     for id, tweet in test_tweets.items():
         actual_value = test_set.loc[test_set['tweet_id'] == id]['q1_label'].values[0]
-        test_value = model.test(tweet)
+        test_value, probability = model.test(tweet)
         correctness = 'wrong'
         if actual_value == test_value:
             correctness = 'correct'
+            number_of_correct += 1
+        else:
+            number_of_wrong += 1
 
             
-        print(str(id) +'  ' +str(test_value)+'  ' + str("1e6")+'  ' + str(actual_value) +'  '+ str(correctness))
+        print(str(id) +'  ' +str(test_value)+'  ' + str(probability)+'  ' + str(actual_value) +'  '+ str(correctness))
         # trace_output(id,model.test(tweet),"1e6",test_set.loc[test_set['tweet_id']==id])
+    print("number of correct: "+str(number_of_correct))
+    print("number of wrong: "+str(number_of_wrong))
 
 def trace_output(id, likely_label, score, actual, quality):
     print(id)
