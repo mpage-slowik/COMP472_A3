@@ -1,3 +1,4 @@
+from os import curdir
 from file_manipulation import read_tsv_input_to_df
 import string
 import pandas as pd
@@ -101,15 +102,16 @@ def get_BOW_filtered():
     return df_filtered
 
 
-def sanitize_tweet(tweet, vocabulary):
+def sanitize_tweet(dataframe, vocabulary, test_tweets):
     sanitised_tweet = list()
-    for word in tweet:
+    list_words = re.split(r'\s+', dataframe['text'])
+    for word in list_words:
         if word in vocabulary:
             sanitised_tweet.append(word)
-    return sanitised_tweet
+    test_tweets[dataframe['tweet_id']] = sanitised_tweet
 
 
-def run_naive_bay(dataframe, test_file_name):
+def run_naive_bay(dataframe, test_file_name, vocab):
 
     print("Building model...")
     model = NaiveBayesClassifier(dataframe)
@@ -119,21 +121,27 @@ def run_naive_bay(dataframe, test_file_name):
     test_set = read_tsv_input_to_df(test_file_name)
     test_set['text'] = test_set['text'].str.lower()
 
-    # get vocabular in a list
-    vocab = list()
-    for key in _vocabulary:
-        vocab.append(key)
+    test_tweets ={}
+    test_set.apply(sanitize_tweet, vocabulary=vocab,test_tweets=test_tweets, axis=1)
 
-    test_tweets = list()
-    for index in range(15):
-        test_tweets.append(sanitize_tweet(
-            test_set.loc[index]['text'].split(" "), vocab))
+    for id, tweet in test_tweets.items():
+        actual_value = test_set.loc[test_set['tweet_id'] == id]['q1_label'].values[0]
+        test_value = model.test(tweet)
+        correctness = 'wrong'
+        if actual_value == test_value:
+            correctness = 'correct'
 
-    for tweet in test_tweets:
-        print(model.test(tweet))
+            
+        print(str(id) +'  ' +str(test_value)+'  ' + str("1e6")+'  ' + str(actual_value) +'  '+ str(correctness))
+        # trace_output(id,model.test(tweet),"1e6",test_set.loc[test_set['tweet_id']==id])
+
+def trace_output(id, likely_label, score, actual, quality):
+    print(id)
 
 
 if __name__ == "__main__":
     set_up('covid_training.tsv')
     build_vocabulary()
-    run_naive_bay(get_BOW_regular(), 'covid_test_public.tsv')
+    run_naive_bay(get_BOW_regular(), 'covid_test_public.tsv',list(_vocabulary.keys()))
+    print('running filtered')
+    run_naive_bay(get_BOW_filtered(), 'covid_test_public.tsv', list(_filtered_vocabulary.keys()))
