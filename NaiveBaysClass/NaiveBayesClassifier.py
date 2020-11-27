@@ -36,14 +36,13 @@ class NaiveBayesClassifier:
 
     def _get_probablility_table(self, dataset):
         probability_table = dataset.drop(columns=[FACTUAL_CLAIM_ID]).sum(axis=0)
-        # NOT SURE IF WE MULTIPLY THE VOCAB SIZE BY THE SMOOTHING AND THEN ADD IT OR JUST ADD THE VOCAB SIZE
         total_number_of_words = probability_table.sum(axis=0) + (self.vocabulary_size * SMOOTHING_ADDITIVE)
         return probability_table.apply(lambda x: math.log((x + SMOOTHING_ADDITIVE) / total_number_of_words))
 
     def test(self, words):
         factual_probability = self._get_factual_claim_probability(words)
         not_factual_probability = self._get_not_factual_claim_probability(words)
-        if factual_probability >= not_factual_probability:
+        if factual_probability > not_factual_probability:
             return FACTUAL_CLAIM_VALUE, factual_probability
         return NOT_FACTUAL_CLAIM_VALUE, not_factual_probability
 
