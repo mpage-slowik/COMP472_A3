@@ -18,6 +18,7 @@ def set_up(training_file_name):
     training_set = read_tsv_input_to_df(training_file_name)
     training_set['text'] = training_set['text'].str.lower()
 
+
 # Log 10
 
 
@@ -26,7 +27,6 @@ def build_vocabularies():
     global _filtered_vocabulary
     global _text_vectors
     global _filtered_text_vectors
-    # nlp = spacy.load('en_core_web_sm')
 
     training_set['text'].apply(count_words, vocab=_vocabulary)
     training_set['text'].apply(count_words, vocab=_filtered_vocabulary)
@@ -44,7 +44,6 @@ def build_BOW(text, vocab, master_vect):
 
 
 def count_words(text, vocab):
-    # regex_punc = map(str,string.punctuation)
     list_words = re.split(r'\s+', text)
     for word in list_words:
         if word in vocab:
