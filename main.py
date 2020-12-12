@@ -19,9 +19,6 @@ def set_up(training_file_name):
     training_set['text'] = training_set['text'].str.lower()
 
 
-# Log 10
-
-
 def build_vocabularies():
     global _vocabulary
     global _filtered_vocabulary
